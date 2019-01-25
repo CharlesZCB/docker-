@@ -1,0 +1,128 @@
+vi +文件名
+i 进入修改状态
+ESC 然后按：
+输入q  或者 w + q
+
+
+第55节课
+service network restart  重启网络地址
+ip addr 查看网络地址ip
+第56课
+uname -r 查看环境版本、docker必须是centos的3.10
+yum update  跟新本版
+yum install docker安装下载docker
+
+
+[root@promote ~]# vi /etc/sysconfig/docker
+enable=false(添加的东西) 修改完成后保存重启  就OK了
+[root@promote ~]# systemctl start docker
+[root@promote ~]# docker -v
+Docker version 1.13.1, build 07f3374/1.13.1
+
+开机自动启动docker:systemctl enable docker
+
+停止docker
+systemctl stop docker
+
+第57课
+docker命令：
+docker search redis 查看docker中是否有redis
+docker pull 景象名字
+docker pull 景象名字：version
+docker images  查看所有镜像
+docker rmi 镜像ID 删除指定的镜像
+docker images ID 查看指定的镜像
+
+1.执行“docker stop $(docker ps -a -q)”  用来停止停止所有的container
+2.如果有报错  涉及到容器需要关闭的 执行下面的操作：
+	1）docker ps -a | grep "Exited" | awk '{print $1 }'|xargs docker stop
+	2）docker ps -a | grep "Exited" | awk '{print $1 }'|xargs docker rm
+	3）docker images|grep none|awk '{print $3 }'|xargs docker rmi
+
+
+docker 容器操作
+运行：docker run --name 自定义名字 -d 镜像名字
+docker ps 查看运行中的程序
+docker stop ID/自定义名字  停止程序
+docker ps -a 查看所有的程序
+启动容器：docker start 容器ID
+删除容器：docker rmi ID
+启动已经存在的container:docker start 5e9d896dc62c(container ID)
+启动端口映射的tomcat:
+docker run -d -p 8888:8080 tomcat
+主机端口:内部端口
+-d 后台运行
+
+
+service firewalld status  查看Linux的防火墙状态
+service firewalld stop 关闭防火墙
+docker logs containerID  查看日志的内容
+注意：Linux中一个镜像可以启动多个容器（修改端口号）
+【docker run -d -p 8888:8080 tomcat】
+【docker run -d -p 8889:8080 tomcat】
+
+
+如果在下载（docker pull ...）的时候很慢；
+[root@localhost ~]# mkdir -p /etc/docker
+[root@localhost ~]# tee /etc/docker/daemon.json <<-'EOF'
+{
+  "registry-mirrors": ["https://9cpn8tt6.mirror.aliyuncs.com"]
+}
+EOF
+[root@localhost ~]# systemctl daemon-reload
+[root@localhost ~]# systemctl restart docker
+
+第58课程
+mysql的正确启动：
+docker run -p 3306:3306 --name mysql01 -e MYSQL_ROOT_PASSWORD=root -d mysql
+本机：容器
+
+如果后面带上 --**  表示要将属性** 带入启动mysql的操作中
+docker run -p 3306:3306 --name mysql01 -e MYSQL_ROOT_PASSWORD=root -d mysql -- character-coding-set=utf-8
+
+
+64课程
+使用Mapper Scan批量扫描所有的Mapper文件接口
+使用JPA进行数据操作
+
+
+
+74 高级开发
+@cacheable 主要针对方法配置  说明该方法所得到的值会被放进缓存
+@cachevict  清空缓存
+@cachput 保证方法被调用 有希望结果被缓存
+
+
+
+第88 消息队列的使用
+docker pull rabbitmq:3-management 下载rabbitmq
+docker run -d -p 5672:5672 -p 15672:15672 --name rabbitmq d69a5113ceae   启动rabbitmq
+端口号：5672
+
+direct:点对点  即发的路由（Routing key）是什么就发给谁
+fanont:点对多 即发的不管是什么路由 都会被发送到
+topic:模糊匹配 即带有包含关键字的就会被发送到
+rabbitMessagingTemplate.convertAndSend(） 发送数据
+rabbitMessagingTemplate.receiveAndConvert("atguigu.paobu"); 接收数据
+
+MessageConverter 配置类将传入的数据以json 的格式存储
+ @RabbitListener(queues = "atguigu.paobu") //注释监听那个queue    注入在Service上  一旦该queue发生数据变化都会被监视
+
+
+
+92课
+elasticsearch:
+启动：docker run -e ES_JAVA_OPTS="-Xms256m -Xmx256m" -d -p 9200:9200 -p 9300:9300 --name ES01 5acf0e8da90b
+端口号：9200
+
+
+97课程
+异步任务：
+在需要的方法（里面包含线程  可能有sleep 的方法）上面加上@Asyc 注解
+并且在启动类上面加上@EnableAsy
+
+104课
+服务中心 zookeeper的 启动：docker run --name zk01 -p 2181:2181 --restart always  -d c997e2a2fcf9
+
+
+
